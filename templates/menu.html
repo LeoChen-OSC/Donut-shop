@@ -16,19 +16,23 @@
                 <a href="/contact">Contact</a>
 
             </div>
+            <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
         </div>
         <h2>Menu</h2>
         <div class="menu">
-
-            <div class="menu-items">
-                <h2>plain donut</h2>
-                <form action="/verify" method="post">
-                    <input type="hidden" name="main_order" value="plain donut" id="main_order">
-                    <input type="hidden" id="image" name="image" value="images/plain_donut.png">
-                    <img src="{{ url_for('static', filename='images/plain_donut.png') }}" alt="Plain Donut" width="200">
-                    <button type="submit">Add to Order</button>
-                </form>
-            </div>  
+                {% for donut_temp,details in donut_temp.items() %}
+                <div class="menu-items">
+                    <h2>{{ donut_temp }}</h2>
+                    <h2>${{ "%.2f"|format(details.price) }}</h2>
+                    <form action="/verify" method="post">
+                        <input type="hidden" name="main_order" value="{{ donut_temp }}" id="main_order">
+                        <input type="hidden" id="image" name="image" value="images/plain_donut.png">
+                        <input type="hidden" name="price" value="{{ details.price }}" id="price">
+                        <img src="{{ url_for('static', filename='images/plain_donut.png') }}" alt="Plain Donut" width="200">
+                        <button type="submit">Add to Order</button>
+                    </form>
+                </div>  
+            {% endfor %}
             <div class="menu-items">
                 <h2>creme filled donut</h2>
                 <form action="/verify" method="post">

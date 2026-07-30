@@ -21,6 +21,7 @@
             <h1>{{ main_order }}</h1>
             <img src="{{ url_for('static', filename=image) }}" alt="{{ main_order }}" width="200">
             <h2>Choose Toppings and Sprinkles</h2>
+            <h2>base cost: ${{ price }}</h2>
             <form action="/checkout" method="POST" >
                 <div class="orderForm">
                     <select name="topping" id="topping">

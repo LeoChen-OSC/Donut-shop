@@ -24,6 +24,10 @@
             <p>Sprinkle: {{ sprinkle }}</p>
             <p>Quantity: {{ quantity }}</p>
         </div>
+        <div class="total">
+            <h3>Total Price: ${{ total_price }}</h3>
+        </div>
+        <form action="/payup" method="POST">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul>

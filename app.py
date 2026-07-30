@@ -7,12 +7,12 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 def load_data():
     with open('shopping-data/type.json') as f:
-        flowers = json.load(f)
+        donut_temp = json.load(f)
     with open('shopping-data/topping.json') as f:
         toppings = json.load(f)
     with open('shopping-data/sprinkle.json') as f:
         sprinkles = json.load(f)
-    return flowers, toppings, sprinkles
+    return donut_temp, toppings, sprinkles
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -63,7 +63,9 @@ def login_submit():
             return redirect(url_for('index'))
 @app.route('/menu')
 def menu():
-    return render_template('menu.html')
+    donut_temp, toppings, sprinkles = load_data()
+    price_display = {donut: details['price'] for donut, details in donut_temp.items()}
+    return render_template('menu.html', donut_temp=donut_temp, toppings=toppings, sprinkles=sprinkles, price_display=price_display)
 @app.route('/checkout', methods=['POST'])
 def add_to_cart():
 
@@ -97,7 +99,7 @@ def add_to_cart():
     flash(f'Item added to cart! {main_order} alongside {toppings} and {sprinkles} with quantity {quantity}, total: ${total_2:.2f}.')
     
 
-    return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=sprinkles)
+    return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=sprinkles, total_price=total_2)
 
 
 
@@ -111,8 +113,8 @@ def verify():
         sprinkle_data = json.load(f)
     main_order = request.form['main_order']
     image=request.form['image']
-
-    return render_template('verify-order.html', main_order=main_order, toppings=topping_data, sprinkles=sprinkle_data, image=image)
+    price=request.form['price']
+    return render_template('verify-order.html',price=price, main_order=main_order, toppings=topping_data, sprinkles=sprinkle_data, image=image)
 if __name__ == '__main__':
     create_db()
     app.run(debug=True)
