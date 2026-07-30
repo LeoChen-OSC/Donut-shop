@@ -1,0 +1,22 @@
+{
+    "chocolate":{
+        "price": 1.5,
+        "calories": 100
+    },
+    "glazed bacon":{
+        "price": 2.0,
+        "calories": 150
+    },
+    "cookies and creme":{
+        "price": 0.5,
+        "calories": 50
+    },
+    "peanut butter":{
+        "price": 1.0,
+        "calories": 80
+    },
+    "caramel popcorn":{
+        "price": 1.25,
+        "calories": 120
+    }
+}

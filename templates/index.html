@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>donut stoppers</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div class="header">
+            <h1>donut stoppers</h1>
+            <h1>Welcome to donut stoppers</h1>
+            <div class="linknav">
+                <a href="/menu">Menu</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+            </div>
+        </div>
+        <form action="/submit" method="post">
+            <label for="name">Enter your name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="email">Enter your email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="orders">Enter your orders:</label>
+            <input type="text" id="orders" name="orders">
+            <label for="phonenum">Enter your phone number:</label>
+            <input type="text" id="phonenum" name="phonenum">
+            <button type="submit">Submit</button>
+        </form>
+        <form action="/login" method="post">
+            <label for="email">Enter your email:</label>
+            <input type="email" id="email" name="email" required>
+            <br>
+            <label for="password">Enter your password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>donut stoppers</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div class="header">
+            <h1>donut stoppers</h1>
+            <h1>Welcome to donut stoppers</h1>
+            <div class="linknav">
+                <a href="/menu">Menu</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+            </div>
+        </div>
+        <h2>Checkout</h2>
+        <div class="checkout">
+            <h3>Order Summary</h3>
+            <p>Main Order: {{ main_order }}</p>
+            <p>Topping: {{ topping }}</p>
+            <p>Sprinkle: {{ sprinkle }}</p>
+            <p>Quantity: {{ quantity }}</p>
+        </div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </body>
+</html>

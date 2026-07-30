@@ -1,0 +1,22 @@
+{
+    "plain donut":{
+        "price": 1.50,
+        "calories": 200
+    },
+    "glazed donut":{
+        "price": 1.75,
+        "calories": 250
+    },
+    "baked donut":{
+        "price": 2.00,
+        "calories": 180
+    },
+    "cream-filled donut":{
+        "price": 2.50,
+        "calories": 300
+    },
+    "jam filled donut":{
+        "price": 2.25,
+        "calories": 280
+    }
+}
