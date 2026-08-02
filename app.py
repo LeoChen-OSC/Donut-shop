@@ -70,36 +70,48 @@ def menu():
 def add_to_cart():
 
     main_order = request.form['main_order']
-    toppings = request.form.getlist('toppings')
-    sprinkles = request.form.getlist('sprinkles')
+    toppings = request.form['topping']
+    sprinkles = request.form['sprinkle']
     quantity = int(request.form['quantity'])
-    main_order1=load_data()
+    donut_temp, toppings_data, sprinkles_data = load_data()
     cart = session.get('cart', {})
-    if main_order1 not in main_order1:
-        flash('Invalid main order selection.')
-
+    if sprinkles in sprinkles_data:
+        selected_sprinkles = sprinkles_data[sprinkles]
+        sprinkles_price = float(selected_sprinkles['price'])
+        print(f"Selected sprinkles: {selected_sprinkles}, Price: {sprinkles_price}")
     else:
-        cart[main_order] = {
-            'main-price': 2.00,  # Assuming a fixed price for simplicity
-            'topping_price':toppings[toppings]['price'],
-            'sprinkle_price':sprinkles[sprinkles]['price'],
-            'quantity': quantity
-        }
-    session['cart'] = cart
-    
-    session.modified = True
-    def calculate_total_one_item():
-        main_price =int(2)
-        topping_price = int(cart[main_order]['topping_price'])
-        sprinkle_price = int(cart[main_order]['sprinkle_price'])
-        quantity = int(cart[main_order]['quantity'])
-        total_1 = (main_price + topping_price + sprinkle_price) * quantity
-        return total_1
-    total_2 = calculate_total_one_item()
-    flash(f'Item added to cart! {main_order} alongside {toppings} and {sprinkles} with quantity {quantity}, total: ${total_2:.2f}.')
-    
+        selected_sprinkles = None
+        sprinkles_price = 0.0
+        print("No sprinkles selected or invalid selection.")
+    if toppings in toppings_data:
+        selected_toppings = toppings_data[toppings]
+        toppings_price = float(selected_toppings['price'])
+        print(f"Selected toppings: {selected_toppings}, Price: {toppings_price}")
+    else:
+        selected_toppings = None
+        toppings_price = 0.0
+        print("No toppings selected or invalid selection.")
+    item_info=(main_order+ " - Other additons:", toppings, sprinkles)
+    #determining the exact combination of items if it was already in cart or not
+    total_price = (float(donut_temp[main_order]['price']) + toppings_price + sprinkles_price) * quantity
+    flash(f'Added {quantity} {main_order}(s) to cart with toppings: {toppings} and sprinkles: {sprinkles}. Total price: ${total_price:.2f}')
+        
+    if item_info in cart:
 
-    return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=sprinkles, total_price=total_2)
+        cart[item_info]['quantity'] += quantity
+        cart[item_info]['total_price'] += total_price
+    else:
+        cart[item_info] = {
+
+            'quantity': quantity, 
+            'total_price': total_price}
+    print(f"Item info: {item_info}")
+    print(f"Cart contents: {cart}")
+    session['cart']=cart
+    session.modified = True
+   
+
+    return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=selected_sprinkles, cart=cart, total_price=total_price, quantity=quantity)
 
 
 

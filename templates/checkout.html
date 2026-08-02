@@ -27,6 +27,19 @@
         <div class="total">
             <h3>Total Price: ${{ total_price }}</h3>
         </div>
+        <div class="in_items">
+            {% if cart %}
+                <ul>
+                {% for items, details in cart.items() %}
+                    <li>{{ items }} - Quantity: {{ details.quantity }} - Price: ${{ details.total_price }}
+
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>Your cart is empty.</p>
+            {% endif %}
+        </div>
         <form action="/payup" method="POST">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
