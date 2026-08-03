@@ -91,7 +91,7 @@ def add_to_cart():
         selected_toppings = None
         toppings_price = 0.0
         print("No toppings selected or invalid selection.")
-    item_info=(main_order+ " - Other additons:", toppings, sprinkles)
+    item_info=f"{main_order}|{toppings}|{sprinkles}"
     #determining the exact combination of items if it was already in cart or not
     total_price = (float(donut_temp[main_order]['price']) + toppings_price + sprinkles_price) * quantity
     flash(f'Added {quantity} {main_order}(s) to cart with toppings: {toppings} and sprinkles: {sprinkles}. Total price: ${total_price:.2f}')
@@ -112,7 +112,18 @@ def add_to_cart():
    
 
     return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=selected_sprinkles, cart=cart, total_price=total_price, quantity=quantity)
-
+@app.route('/remove_from_cart', methods=['POST'])
+def delete_item():
+    item_info = request.form['item_info']
+    cart = session.get('cart', {})
+    if item_info in cart:
+        del cart[item_info]
+        session['cart'] = cart
+        session.modified = True
+        flash(f'Item {item_info} removed from cart.')
+    else:
+        flash(f'Item {item_info} not found in cart.')
+    return redirect(url_for('checkout'))
 
 
 @app.route('/verify', methods=['POST'])

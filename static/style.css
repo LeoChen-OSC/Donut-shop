@@ -34,6 +34,7 @@ h1 {
 .menu{
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 }
 .menu-items {
     display:flex;
