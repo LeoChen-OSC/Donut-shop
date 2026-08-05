@@ -32,10 +32,7 @@
                 <ul>
                 {% for items, details in cart.items() %}
                     <li>{{ items }} - Quantity: {{ details.quantity }} - Price: ${{ details.total_price }}
-                        <form action="{{ url_for('remove_from_cart') }}" method="POST" style="display: inline;">
-                            <input type="hidden" name="item_info" value="{{ items }}">
-                            <button type="submit">Remove</button>
-                        </form>
+                        <a href="{{ url_for('remove_from_cart', item_info=items) }}">Remove</a>
                     </li>
                 {% endfor %}
                 </ul>

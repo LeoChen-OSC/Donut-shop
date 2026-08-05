@@ -66,55 +66,9 @@ def menu():
     donut_temp, toppings, sprinkles = load_data()
     price_display = {donut: details['price'] for donut, details in donut_temp.items()}
     return render_template('menu.html', donut_temp=donut_temp, toppings=toppings, sprinkles=sprinkles, price_display=price_display)
-@app.route('/checkout', methods=['POST'])
-def add_to_cart():
-
-    main_order = request.form['main_order']
-    toppings = request.form['topping']
-    sprinkles = request.form['sprinkle']
-    quantity = int(request.form['quantity'])
-    donut_temp, toppings_data, sprinkles_data = load_data()
-    cart = session.get('cart', {})
-    if sprinkles in sprinkles_data:
-        selected_sprinkles = sprinkles_data[sprinkles]
-        sprinkles_price = float(selected_sprinkles['price'])
-        print(f"Selected sprinkles: {selected_sprinkles}, Price: {sprinkles_price}")
-    else:
-        selected_sprinkles = None
-        sprinkles_price = 0.0
-        print("No sprinkles selected or invalid selection.")
-    if toppings in toppings_data:
-        selected_toppings = toppings_data[toppings]
-        toppings_price = float(selected_toppings['price'])
-        print(f"Selected toppings: {selected_toppings}, Price: {toppings_price}")
-    else:
-        selected_toppings = None
-        toppings_price = 0.0
-        print("No toppings selected or invalid selection.")
-    item_info=f"{main_order}|{toppings}|{sprinkles}"
-    #determining the exact combination of items if it was already in cart or not
-    total_price = (float(donut_temp[main_order]['price']) + toppings_price + sprinkles_price) * quantity
-    flash(f'Added {quantity} {main_order}(s) to cart with toppings: {toppings} and sprinkles: {sprinkles}. Total price: ${total_price:.2f}')
-        
-    if item_info in cart:
-
-        cart[item_info]['quantity'] += quantity
-        cart[item_info]['total_price'] += total_price
-    else:
-        cart[item_info] = {
-
-            'quantity': quantity, 
-            'total_price': total_price}
-    print(f"Item info: {item_info}")
-    print(f"Cart contents: {cart}")
-    session['cart']=cart
-    session.modified = True
-   
-
-    return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=selected_sprinkles, cart=cart, total_price=total_price, quantity=quantity)
-@app.route('/remove_from_cart', methods=['POST'])
-def delete_item():
-    item_info = request.form['item_info']
+@app.route('/remove_from_cart')
+def remove_from_cart():
+    item_info = request.args.get('item_info')
     cart = session.get('cart', {})
     if item_info in cart:
         del cart[item_info]
@@ -123,7 +77,59 @@ def delete_item():
         flash(f'Item {item_info} removed from cart.')
     else:
         flash(f'Item {item_info} not found in cart.')
-    return redirect(url_for('checkout'))
+             
+    return redirect(url_for('add_to_cart'))
+
+@app.route('/checkout', methods=['POST'])
+def add_to_cart():
+    try:
+        main_order = request.form['main_order']
+        toppings = request.form['topping']
+        sprinkles = request.form['sprinkle']
+        quantity = int(request.form['quantity'])
+        donut_temp, toppings_data, sprinkles_data = load_data()
+        cart = session.get('cart', {})
+        if sprinkles in sprinkles_data:
+            selected_sprinkles = sprinkles_data[sprinkles]
+            sprinkles_price = float(selected_sprinkles['price'])
+            print(f"Selected sprinkles: {selected_sprinkles}, Price: {sprinkles_price}")
+        else:
+            selected_sprinkles = None
+            sprinkles_price = 0.0
+            print("No sprinkles selected or invalid selection.")
+        if toppings in toppings_data:
+            selected_toppings = toppings_data[toppings]
+            toppings_price = float(selected_toppings['price'])
+            print(f"Selected toppings: {selected_toppings}, Price: {toppings_price}")
+        else:
+            selected_toppings = None
+            toppings_price = 0.0
+            print("No toppings selected or invalid selection.")
+        item_info=f"{main_order}|{toppings}|{sprinkles}"
+        #determining the exact combination of items if it was already in cart or not
+        total_price = (float(donut_temp[main_order]['price']) + toppings_price + sprinkles_price) * quantity
+        flash(f'Added {quantity} {main_order}(s) to cart with toppings: {toppings} and sprinkles: {sprinkles}. Total price: ${total_price:.2f}')
+            
+        if item_info in cart:
+
+            cart[item_info]['quantity'] += quantity
+            cart[item_info]['total_price'] += total_price
+        else:
+            cart[item_info] = {
+
+                'quantity': quantity, 
+                'total_price': total_price}
+        print(f"Item info: {item_info}")
+        print(f"Cart contents: {cart}")
+    except Exception as e:
+        flash(f'Error adding to cart: {str(e)}')
+        return redirect(url_for('checkout'))
+    session['cart']=cart
+    session.modified = True
+   
+
+    return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=selected_sprinkles, cart=cart, total_price=total_price, quantity=quantity)
+
 
 
 @app.route('/verify', methods=['POST'])
