@@ -28,6 +28,55 @@ def create_db():
               password TEXT)''')
     conn.commit()
     conn.close()
+def generate_user_list():
+    conn = sqlite3.connect('databaseuser.db')
+    c = conn.cursor()
+    c.execute('''
+              CREATE TABLE IF NOT EXISTS users
+              (id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+              email TEXT,
+              password TEXT)''')
+    conn.commit()
+    conn.close(    )
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        conn = sqlite3.connect('databaseuser.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO users (email, password) VALUES (?, ?)", (email, password))
+        conn.commit()
+        conn.close()
+
+        flash('Registration successful! Please log in.')
+        return redirect(url_for('index'))
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    username=session.get('user')
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        conn = sqlite3.connect('databaseuser.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM users WHERE email=? AND password=?", (email, password))
+        user = c.fetchone()
+        conn.close()
+        if user:
+            flash('Login successful!')
+            session['user'] = user[1]  # Store the user's name in the session
+            print(f"User {user[1]} logged in successfully.")
+            return redirect(url_for('index'))
+            
+        else:
+            flash('Invalid email or password.')
+            return redirect(url_for('index'))
+@app.route('/user')
+def user():
+    return render_template('login.html')
 @app.route('/submit', methods=['POST'])
 def submit():
     name = request.form['name']
@@ -49,7 +98,7 @@ def login_submit():
         email = request.form['email']
         password = request.form['password']
 
-        conn = sqlite3.connect('database.db')
+        conn = sqlite3.connect('databaseuser.db')
         c = conn.cursor()
         c.execute("SELECT * FROM users WHERE email=? AND password=?", (email, password))
         user = c.fetchone()
@@ -63,6 +112,8 @@ def login_submit():
             return redirect(url_for('index'))
 @app.route('/menu')
 def menu():
+    session['user'] = session.get('user', None)
+    print(f"Current user in session: {session['user']}")
     donut_temp, toppings, sprinkles = load_data()
     price_display = {donut: details['price'] for donut, details in donut_temp.items()}
     return render_template('menu.html', donut_temp=donut_temp, toppings=toppings, sprinkles=sprinkles, price_display=price_display)
@@ -80,7 +131,7 @@ def remove_from_cart():
              
     return redirect(url_for('add_to_cart'))
 
-@app.route('/checkout', methods=['POST'])
+@app.route('/checkout', methods=['POST', 'GET'])
 def add_to_cart():
     try:
         main_order = request.form['main_order']
@@ -121,15 +172,25 @@ def add_to_cart():
                 'total_price': total_price}
         print(f"Item info: {item_info}")
         print(f"Cart contents: {cart}")
+        session['cart']=cart
+        session.modified = True
+        return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=selected_sprinkles, cart=cart, total_price=total_price, quantity=quantity)
+
     except Exception as e:
-        flash(f'Error adding to cart: {str(e)}')
-        return redirect(url_for('checkout'))
-    session['cart']=cart
-    session.modified = True
+        cart = session.get('cart', {})
+
+    
+        session['cart']=cart
+        session.modified = True
+        return render_template('checkout.html', cart=cart)
    
-
-    return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=selected_sprinkles, cart=cart, total_price=total_price, quantity=quantity)
-
+@app.route('/payup', methods=['POST'])
+def payup():
+    user = session.get('user', None)
+    cart = session.get('cart', {})
+    total_price = sum(item['total_price'] for item in cart.values())
+    return render_template('payment.html', cart=cart, total_price=total_price, user=user)
+    
 
 
 @app.route('/verify', methods=['POST'])
@@ -146,4 +207,5 @@ def verify():
     return render_template('verify-order.html',price=price, main_order=main_order, toppings=topping_data, sprinkles=sprinkle_data, image=image)
 if __name__ == '__main__':
     create_db()
+    generate_user_list()
     app.run(debug=True)

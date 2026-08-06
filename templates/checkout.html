@@ -41,6 +41,8 @@
             {% endif %}
         </div>
         <form action="/payup" method="POST">
+            <button type="submit">Proceed to Payment</button>
+        </form>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul>
