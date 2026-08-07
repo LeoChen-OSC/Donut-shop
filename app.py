@@ -15,7 +15,9 @@ def load_data():
     return donut_temp, toppings, sprinkles
 @app.route('/')
 def index():
-    return render_template('index.html')
+    session['user'] = session.get('user', None)
+    
+    return render_template('index.html', session=session)
 def create_db():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
@@ -117,6 +119,16 @@ def menu():
     donut_temp, toppings, sprinkles = load_data()
     price_display = {donut: details['price'] for donut, details in donut_temp.items()}
     return render_template('menu.html', donut_temp=donut_temp, toppings=toppings, sprinkles=sprinkles, price_display=price_display)
+@app.route('/search')
+def search():
+    Search_item=request.args.get('query')
+    donut, toppings, sprinkles = load_data()
+    search_query="true"
+    donut_temp = []
+    for donuts in donut:
+        if Search_item.lower() in donuts.lower():
+            donut_temp.append(donuts)
+    return render_template('menu.html', donut_temp=donut_temp, toppings=toppings, sprinkles=sprinkles, search_query=search_query)
 @app.route('/remove_from_cart')
 def remove_from_cart():
     item_info = request.args.get('item_info')
@@ -190,8 +202,16 @@ def payup():
     cart = session.get('cart', {})
     total_price = sum(item['total_price'] for item in cart.values())
     return render_template('payment.html', cart=cart, total_price=total_price, user=user)
-    
-
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    flash('You have been logged out.')
+    return redirect(url_for('index'))
+@app.route('/cartclear', methods=['POST'])
+def cartclear():
+    session.pop('cart', None)
+    flash('Cart cleared!')
+    return redirect(url_for('add_to_cart'))
 
 @app.route('/verify', methods=['POST'])
 def verify():

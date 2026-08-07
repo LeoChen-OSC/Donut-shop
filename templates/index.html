@@ -8,8 +8,13 @@
     </head>
     <body>
         <div class="header">
-            <h1>donut stoppers</h1>
-            <a href="/user">Login</a>
+            <a href="/"><h1>donut stoppers</h1></a>
+            {% if session.user %}
+                <h2>Logged in as: {{ session.user }}</h2>
+                <a href="/logout">Logout</a>
+            {% else %}
+                <a href="/user">Login</a>
+            {% endif %}
             <h1>Welcome to donut stoppers</h1>
             <div class="linknav">
                 <a href="/menu">Menu</a>

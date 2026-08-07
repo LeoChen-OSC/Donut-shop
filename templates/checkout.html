@@ -8,7 +8,7 @@
     </head>
     <body>
         <div class="header">
-            <h1>donut stoppers</h1>
+            <a href="/"><h1>donut stoppers</h1></a>
             <h1>Welcome to donut stoppers</h1>
             <div class="linknav">
                 <a href="/menu">Menu</a>
@@ -17,13 +17,6 @@
             </div>
         </div>
         <h2>Checkout</h2>
-        <div class="checkout">
-            <h3>Order Summary</h3>
-            <p>Main Order: {{ main_order }}</p>
-            <p>Topping: {{ topping }}</p>
-            <p>Sprinkle: {{ sprinkle }}</p>
-            <p>Quantity: {{ quantity }}</p>
-        </div>
         <div class="total">
             <h3>Total Price: ${{ total_price }}</h3>
         </div>
@@ -42,6 +35,9 @@
         </div>
         <form action="/payup" method="POST">
             <button type="submit">Proceed to Payment</button>
+        </form>
+        <form action="/cartclear" method="POST">
+            <button type="submit">Clear Cart</button>
         </form>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
