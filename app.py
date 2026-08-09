@@ -149,7 +149,11 @@ def add_to_cart():
         main_order = request.form['main_order']
         toppings = request.form['topping']
         sprinkles = request.form['sprinkle']
-        quantity = int(request.form['quantity'])
+        try:
+            quantity = int(request.form['quantity'])
+        except ValueError:
+            flash('Invalid quantity. Please enter a valid number.')
+            return redirect(url_for('menu'))
         donut_temp, toppings_data, sprinkles_data = load_data()
         cart = session.get('cart', {})
         if sprinkles in sprinkles_data:
