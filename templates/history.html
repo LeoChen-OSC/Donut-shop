@@ -15,7 +15,6 @@
             {% else %}
                 <a href="/user">Login</a>
             {% endif %}
-            <a href="/history"><h1>Order History</h1></a>
             <h1>Welcome to donut stoppers</h1>
             <div class="linknav">
                 <a href="/menu">Menu</a>
@@ -23,9 +22,36 @@
                 <a href="/contact">Contact</a>
             </div>
         </div>
-        {% if message_disp %}
-            <p>{{ message_disp }}</p>
-            <a href="/history">View your order history</a>
+        {% if user %}
+            <h1> {{user}}'s order history </h1>
+        {% else %}
+            <h1>Logged out</h1>
+            <button><a href="/user">Log in</a></button>
+        {% endif %}
+        <table>
+            <tr>
+                <th>Order ID</th>
+                <th>Items</th>
+                <th>Total Price</th>
+                <th>Date</th>
+            </tr>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.order_id }}</td>
+                    <td>
+                            <ul>
+                                {% for item,details in order['item_orders'].items() %}
+                                    <li>{{ item }} - Quantity: {{ details['quantity'] }} </li>
+                                {% endfor %}
+                            </ul>
+                    </td>
+                    <td>${{ order.total }}</td>
+                    <td>{{ order.date }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% if not orders %}
+            <p>No order history available.</p>
         {% endif %}
         {% with messages = get_flashed_messages() %}
             {% if messages %}

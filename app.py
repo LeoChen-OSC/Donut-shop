@@ -1,5 +1,5 @@
 from email.mime import image
-import select
+import select,datetime
 
 from flask import Flask, app, jsonify, request, flash, redirect, session, url_for, render_template
 import sqlite3,json
@@ -23,11 +23,12 @@ def create_db():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS users 
               (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-              name TEXT,
-              email TEXT,
+              email TEXT NOT NULL,
               orders TEXT,
-              phonenum TEXT,
-              password TEXT)''')
+              date TEXT,
+              total_price TEXT
+              
+              )''')
     conn.commit()
     conn.close()
 def generate_user_list():
@@ -229,6 +230,45 @@ def verify():
     image=request.form['image']
     price=request.form['price']
     return render_template('verify-order.html',price=price, main_order=main_order, toppings=topping_data, sprinkles=sprinkle_data, image=image)
+@app.route('/submit_order', methods=['POST'])
+def submit_order():
+    user = json.dumps(session.get('user', None))
+    cart = json.dumps(session.get('cart', {}))
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    total_price = request.form['total_price']
+    print(user)
+    if not user=="null":
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO users (email, orders, date, total_price) VALUES (?, ?, ?, ?)", (user, cart, timestamp, total_price))
+        conn.commit()
+        conn.close()
+        return render_template('index.html', message_disp='Thanks for shopping at donut stoppers!')
+    else:
+        flash('Order complete, Log in to view your history!')
+        return redirect(url_for('index'))
+@app.route('/history')
+def history():
+    user = session.get('user', None)
+    if user:
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+        c.execute("SELECT id, email, orders, date, total_price FROM users WHERE email=?", (user,))
+        orders = c.fetchall()
+        print(f"Fetched orders for user  {orders}")
+        conn.close()
+        user_order_list = []
+        for order in orders:
+            user_order_list .append({
+                    'order_id': order[0],
+                    'email': json.loads(order[1]),
+                    'item_orders': json.loads(order[2]),         
+                    'total': order[4],
+                    'date': order[3]
+
+                })
+        print(f"Order history for user {user}: {user_order_list}")
+    return render_template('history.html', orders=user_order_list, user=user)
 if __name__ == '__main__':
     create_db()
     generate_user_list()
