@@ -146,17 +146,23 @@ def remove_from_cart():
 
 @app.route('/checkout', methods=['POST', 'GET'])
 def add_to_cart():
+    #detects if values are entered into the cart data
     try:
+        #requests the data from the form and stores it as variables
         main_order = request.form['main_order']
         toppings = request.form['topping']
         sprinkles = request.form['sprinkle']
+        #trys to detect invalid number input,otherwise it will redirect back to menu page
         try:
             quantity = int(request.form['quantity'])
         except ValueError:
             flash('Invalid quantity. Please enter a valid number.')
             return redirect(url_for('menu'))
+        #loads all the menu items in jsons, including toppings and sprinkles.
         donut_temp, toppings_data, sprinkles_data = load_data()
+        #loads the cart session, if it does not exist, creates a new cart session
         cart = session.get('cart', {})
+        #determine the total price of sprinkle, toppings and determine if the selection is valid
         if sprinkles in sprinkles_data:
             selected_sprinkles = sprinkles_data[sprinkles]
             sprinkles_price = float(selected_sprinkles['price'])
@@ -173,11 +179,12 @@ def add_to_cart():
             selected_toppings = None
             toppings_price = 0.0
             print("No toppings selected or invalid selection.")
+        #joins the the combination of main order, topping and sprinkle as one variable, 
+        #so it can be used as a key to determine if the combination is already in the cart or not.
         item_info=f"{main_order}|{toppings}|{sprinkles}"
-        #determining the exact combination of items if it was already in cart or not
         total_price = (float(donut_temp[main_order]['price']) + toppings_price + sprinkles_price) * quantity
         flash(f'Added {quantity} {main_order}(s) to cart with toppings: {toppings} and sprinkles: {sprinkles}. Total price: ${total_price:.2f}')
-            
+        #checks the combination already exists in cart
         if item_info in cart:
 
             cart[item_info]['quantity'] += quantity
@@ -189,14 +196,13 @@ def add_to_cart():
                 'total_price': total_price}
         print(f"Item info: {item_info}")
         print(f"Cart contents: {cart}")
+        #exports the cart data into the session, saving it for later use.
         session['cart']=cart
         session.modified = True
         return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=selected_sprinkles, cart=cart, total_price=total_price, quantity=quantity)
-
+    #for a user deleting a item from the cart, or a redirect to the cart page.
     except Exception as e:
         cart = session.get('cart', {})
-
-    
         session['cart']=cart
         session.modified = True
         return render_template('checkout.html', cart=cart)
@@ -214,29 +220,34 @@ def logout():
     return redirect(url_for('index'))
 @app.route('/cartclear', methods=['POST'])
 def cartclear():
+    #removes all the session cart data, clearing it.
     session.pop('cart', None)
     flash('Cart cleared!')
     return redirect(url_for('add_to_cart'))
 
 @app.route('/verify', methods=['POST'])
 def verify():
+    #loads all the menu items in jsons
     with open('shopping-data/type.json') as f:
         menu_data = json.load(f)
     with open('shopping-data/topping.json') as f:
         topping_data = json.load(f) 
     with open('shopping-data/sprinkle.json') as f:
         sprinkle_data = json.load(f)
+    #requests what the user has ordered, then records it down as a variable.
     main_order = request.form['main_order']
     image=request.form['image']
     price=request.form['price']
-    return render_template('verify-order.html',price=price, main_order=main_order, toppings=topping_data, sprinkles=sprinkle_data, image=image)
+    return render_template('verify-order.html',price=price, main_order=main_order, 
+                           toppings=topping_data, sprinkles=sprinkle_data, image=image)
 @app.route('/submit_order', methods=['POST'])
 def submit_order():
-    user = json.dumps(session.get('user', None))
+    user = session.get('user', None)
     cart = json.dumps(session.get('cart', {}))
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     total_price = request.form['total_price']
     print(user)
+    #if user is null, they are not logged in the the data is not unecessarily stored in the database.
     if not user=="null":
         conn = sqlite3.connect('database.db')
         c = conn.cursor()
@@ -250,24 +261,25 @@ def submit_order():
 @app.route('/history')
 def history():
     user = session.get('user', None)
-    if user:
-        conn = sqlite3.connect('database.db')
-        c = conn.cursor()
-        c.execute("SELECT id, email, orders, date, total_price FROM users WHERE email=?", (user,))
-        orders = c.fetchall()
-        print(f"Fetched orders for user  {orders}")
-        conn.close()
-        user_order_list = []
-        for order in orders:
-            user_order_list .append({
-                    'order_id': order[0],
-                    'email': json.loads(order[1]),
-                    'item_orders': json.loads(order[2]),         
-                    'total': order[4],
-                    'date': order[3]
+    print(user)
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM users ")
+    c.execute("SELECT * FROM users WHERE email=?", (user,))
+    orders = c.fetchall()
+    print(f"Fetched orders for user {user}: {orders}")
+    conn.close()
+    user_order_list = []
+    for order in orders:
+        user_order_list.append({
+                'order_id': order[0],
+                'email': order[1],
+                'item_orders': json.loads(order[2]),         
+                'total': order[4],
+                'date': order[3]
 
-                })
-        print(f"Order history for user {user}: {user_order_list}")
+            })
+    print(f"Order history for user {user}: {user_order_list}")
     return render_template('history.html', orders=user_order_list, user=user)
 if __name__ == '__main__':
     create_db()
