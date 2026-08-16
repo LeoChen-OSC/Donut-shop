@@ -54,3 +54,9 @@ h1 {
     height: 200px;
     object-fit: cover;
 }
+.order-row {
+    background-color: #f9f9f9;
+    text-align: center;
+
+
+}

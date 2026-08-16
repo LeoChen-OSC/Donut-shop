@@ -36,7 +36,7 @@
                 <th>Date</th>
             </tr>
             {% for order in orders %}
-                <tr>
+                <tr class="order-row">
                     <td>{{ order.order_id }}</td>
                     <td>
                             <ul>
@@ -47,6 +47,12 @@
                     </td>
                     <td>${{ order.total }}</td>
                     <td>{{ order.date }}</td>
+                    <td>
+                        <form action="{{ url_for('delete_order', order_id=order.order_id) }}" method="post">
+                            <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                            <input type="submit" value="Delete Order">
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
         </table>

@@ -224,7 +224,14 @@ def cartclear():
     session.pop('cart', None)
     flash('Cart cleared!')
     return redirect(url_for('add_to_cart'))
-
+@app.route('/delete_order/<int:order_id>', methods=['POST'])
+def delete_order(order_id):
+    with sqlite3.connect('database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM users WHERE id = ?', (order_id,))
+        conn.commit()
+    flash(f'Order {order_id} deleted!')
+    return redirect(url_for('history'))
 @app.route('/verify', methods=['POST'])
 def verify():
     #loads all the menu items in jsons
