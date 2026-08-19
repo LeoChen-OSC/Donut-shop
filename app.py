@@ -25,6 +25,9 @@ def create_db():
               (id INTEGER PRIMARY KEY AUTOINCREMENT, 
               email TEXT NOT NULL,
               orders TEXT,
+              name TEXT,
+              address TEXT,
+              method TEXT,  
               date TEXT,
               total_price TEXT
               
@@ -50,6 +53,10 @@ def register():
 
         conn = sqlite3.connect('databaseuser.db')
         c = conn.cursor()
+        check_user = c.execute("SELECT * FROM users WHERE email=?", (email,))
+        if check_user.fetchone():
+            flash('Email already registered.')
+            return redirect(url_for('index'))
         c.execute("INSERT INTO users (email, password) VALUES (?, ?)", (email, password))
         conn.commit()
         conn.close()
@@ -250,20 +257,39 @@ def verify():
 @app.route('/submit_order', methods=['POST'])
 def submit_order():
     user = session.get('user', None)
+    print(user)
+    if user is None:
+        flash('Please log in to submit your order.')
+        return redirect(url_for('index'))
     cart = json.dumps(session.get('cart', {}))
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     total_price = request.form['total_price']
+    try:
+        address = request.form['address']
+    except Exception as e:
+        address = "No address provided"
+        print(f"Error occurred while fetching address: {e}")
+    try:
+        user_order_name = request.form['name']
+    except Exception as e:
+        user_order_name = "No name provided"
+        print(f"Error occurred while fetching user name: {e}")
+    method = request.form['delivery_method']
     print(user)
     #if user is null, they are not logged in the the data is not unecessarily stored in the database.
-    if not user=="null":
+    if not user=="null" and not user=="None":
+        print(f"Submitting order for user: {user}")
+        if user=="None":
+            flash('Please log in to submit your order.')
+            return redirect(url_for('index'))
         conn = sqlite3.connect('database.db')
         c = conn.cursor()
-        c.execute("INSERT INTO users (email, orders, date, total_price) VALUES (?, ?, ?, ?)", (user, cart, timestamp, total_price))
+        c.execute("INSERT INTO users (email, orders,name,address, method, date, total_price) VALUES (?, ?, ?, ?, ?, ?, ?)", (user, cart, user_order_name, address, method, timestamp, total_price))
         conn.commit()
         conn.close()
         return render_template('index.html', message_disp='Thanks for shopping at donut stoppers!')
     else:
-        flash('Order complete, Log in to view your history!')
+        flash('Please log in to submit your order.')
         return redirect(url_for('index'))
 @app.route('/history')
 def history():
@@ -281,9 +307,12 @@ def history():
         user_order_list.append({
                 'order_id': order[0],
                 'email': order[1],
-                'item_orders': json.loads(order[2]),         
-                'total': order[4],
-                'date': order[3]
+                'item_orders': json.loads(order[2]), 
+                'name': order[3],
+                'address': order[4],
+                'method': order[5],
+                'total': order[6],
+                'date': order[7]
 
             })
     print(f"Order history for user {user}: {user_order_list}")

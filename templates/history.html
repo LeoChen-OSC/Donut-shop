@@ -32,6 +32,9 @@
             <tr>
                 <th>Order ID</th>
                 <th>Items</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Method</th>
                 <th>Total Price</th>
                 <th>Date</th>
             </tr>
@@ -45,6 +48,9 @@
                                 {% endfor %}
                             </ul>
                     </td>
+                    <td>{{ order.name }}</td>
+                    <td>{{ order.address }}</td>
+                    <td>{{ order.method }}</td>
                     <td>${{ order.total }}</td>
                     <td>{{ order.date }}</td>
                     <td>
