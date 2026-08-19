@@ -16,6 +16,11 @@
             {% else %}
                 <a href="/user">Login</a>
             {% endif %}
+            {% if cartline %}
+                <a href="/checkout"><h1>Cart({{cartline}})</h1></a>
+            {%else%}
+                <a href="/checkout"><h1>Cart</h1></a>
+            {%endif%}
             <a href="/history"><h1>Order History</h1></a>
             <h1>Welcome to donut stoppers</h1>
             <div class="linknav">

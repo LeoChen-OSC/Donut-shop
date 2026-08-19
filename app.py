@@ -15,9 +15,13 @@ def load_data():
     return donut_temp, toppings, sprinkles
 @app.route('/')
 def index():
+    cartline=0
     session['user'] = session.get('user', None)
-    
-    return render_template('index.html', session=session)
+    cart=session.get('cart' ,None)
+    for item in cart:
+        cartline=cartline+cart[item]['quantity']
+    print(cartline)
+    return render_template('index.html', session=session,cart=cart,cartline=cartline)
 def create_db():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
@@ -210,9 +214,13 @@ def add_to_cart():
     #for a user deleting a item from the cart, or a redirect to the cart page.
     except Exception as e:
         cart = session.get('cart', {})
+        total_price=0
         session['cart']=cart
         session.modified = True
-        return render_template('checkout.html', cart=cart)
+        for item in cart:
+            total_price=total_price+cart[item]['total_price'] 
+
+        return render_template('checkout.html', cart=cart,total_price=total_price)
    
 @app.route('/payup', methods=['POST'])
 def payup():
