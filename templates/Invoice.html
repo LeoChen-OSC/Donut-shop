@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}receipt{% endblock  %}
+
+{% block content %}
+<div class=invoice>
+    <h1>RECEIPT</h1>
+    <p>Cart contents:</p>
+    <div class="in_items">
+        {% if cart %}
+            <ul>
+            {% for items, details in cart.items() %}
+                <li>{{ items }} - Quantity: {{ details.quantity }} - Price: ${{ details.total_price }}
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>Your cart is empty.</p>
+        {% endif %}
+    </div>
+    <p>Ordered on {{ timestamp }}</p>
+    {% if address %}
+        <p>Location {{ address }}</p>
+    {% else %}
+        <p>No location provided</p>
+    {% endif %}
+    <p>Name: {{ order_name }}</p>
+    <p>Logged in as {{ user }}</p>
+    <p>total price: ${{ total_price }}</p>
+    <form action="/printinvoice">
+        <input type="submit">Print invoice</input>
+    </form>
+</div>  
+{% endblock %}
