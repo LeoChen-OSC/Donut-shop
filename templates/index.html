@@ -1,83 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>donut stoppers</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
-    </head>
-    <body>
-        <div class="header">
-            <a href="/"><h1>donut stoppers</h1></a>
-            {% if session.user %}
-                <h2>Logged in as: {{ session.user }}</h2>
-                <a href="/logout">Logout</a>
-            {% else %}
-                <a href="/user">Login</a>
-            {% endif %}
-            {% if cartline %}
-                <a href="/checkout"><h1>Cart({{cartline}})</h1></a>
-            {%else%}
-                <a href="/checkout"><h1>Cart</h1></a>
-            {%endif%}
-            <a href="/history"><h1>Order History</h1></a>
-            <h1>Welcome to donut stoppers</h1>
-            <div class="linknav">
-                <a href="/menu">Menu</a>
-                <a href="/about">About</a>
-                <a href="/contact">Contact</a>
-            </div>
-        </div>
-        {% if message_disp %}
-            <p>{{ message_disp }}</p>
-            <a href="/history">View your order history</a>
-        {% endif %}
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-        <section id="swiper-1">
-                <div class="swiper" id="swiper-1">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <div class="swiper-slide-container">
-                                <img src="{{ url_for('static', filename='images/baked-donut.jpg') }}" alt="baked-donut">
-                                <div class="overlay">
-                                    <h2>segment</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="swiper-slide-container">
-                                <img src="{{ url_for('static', filename='images/creme-filled-donut.jpg') }}" alt="Creme-filled Donut">
-                                <div class="overlay">
-                                    <h2>segment1</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="swiper-slide-container">
-                                <img src="{{ url_for('static', filename='images/plain_donut.png') }}" alt="Plain Donut">
-                                <div class="overlay">
-                                    <h2>segment2</h2>
-                                </div>
-                            </div>
+{% extends "base.html" %}
+{% block title %}Donut stoppers{% endblock %}
+{% block content %}
+
+{% if message_disp %}
+    <p>{{ message_disp }}</p>
+    <a href="/history">View your order history</a>
+{% endif %}
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+<h1>STAR DONUTS OF THE WEEK</h1>
+<section id="swiper-1">
+        <div class="swiper" id="swiper-1">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="swiper-slide-container">
+                        <img src="{{ url_for('static', filename='images/baked-donut.jpg') }}" alt="baked-donut">
+                        <div class="overlay">
+                            <h2>segment</h2>
                         </div>
                     </div>
-                    <div class="swiper-pagination"></div>
-                    <div class="swiper-button-prev"></div>
-                    <div class="swiper-button-next"></div>
                 </div>
+                <div class="swiper-slide">
+                    <div class="swiper-slide-container">
+                        <img src="{{ url_for('static', filename='images/creme-filled-donut.jpg') }}" alt="Creme-filled Donut">
+                        <div class="overlay">
+                            <h2>segment1</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="swiper-slide-container">
+                        <img src="{{ url_for('static', filename='images/plain_donut.png') }}" alt="Plain Donut">
+                        <div class="overlay">
+                            <h2>segment2</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div>
 
 
-        </section>
-        <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-        <script src="{{ url_for('static', filename='script.js') }}"></script>
-    </body>
-</html>
+</section>
+
+
+
+{% endblock  %}

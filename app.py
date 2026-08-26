@@ -32,6 +32,19 @@ def index():
     print(cartline)
     return render_template('index.html', session = session, cart = cart, cartline = cartline)
 
+@app.route('/about')
+def about():
+    cartline = 0
+    session['user'] = session.get('user', None) 
+    cart = session.get('cart', None)
+    try:
+        for item in cart:
+            cartline = cartline + cart[item]['quantity']
+    except Exception as e:
+        pass
+    print(cartline)
+    return render_template('about.html', session = session, cart = cart, cartline = cartline)
+
 
 def create_db():
     conn = sqlite3.connect('database.db')
@@ -110,8 +123,16 @@ def login():
 
 @app.route('/user')
 def user():
-    #opens the login page
-    return render_template('login.html')
+    cartline = 0
+    session['user'] = session.get('user', None) 
+    cart = session.get('cart', None)
+    try:
+        for item in cart:
+            cartline = cartline + cart[item]['quantity']
+    except Exception as e:
+        pass
+    print(cartline)
+    return render_template('login.html', session = session, cart = cart, cartline = cartline)
 
 
 @app.route('/menu')
@@ -293,10 +314,29 @@ def submit_order():
                   (user, cart, user_order_name, address, method, timestamp, total_price))
         conn.commit()
         conn.close()
-        return render_template('index.html', message_disp='Thanks for shopping at donut stoppers!')
+        cartline = 0
+
+        cart = session.get('cart', None)
+        try:
+            for item in cart:
+                cartline = cartline + cart[item]['quantity']
+        except Exception as e:
+            pass
+        print(cartline)
+        return render_template('Invoice.html', user = user, cart = cart, timestamp = timestamp, 
+                               total_price = total_price, address = address, order_name = user_order_name, cartline=cartline)
     else:
         flash('Please log in to submit your order.')
-        return redirect(url_for('index'))
+        cartline = 0
+        cart = session.get('cart', None)
+        try:
+            for item in cart:
+                cartline = cartline + cart[item]['quantity']
+        except Exception as e:
+            pass
+        print(cartline)
+        return render_template('Invoice.html', cart = cart, timestamp = timestamp, 
+                               total_price = total_price, address = address, order_name = user_order_name, cartline = cartline)
 
 
 @app.route('/history')
