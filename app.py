@@ -365,8 +365,26 @@ def history():
             })
     print(f"Order history for user {user}: {user_order_list}")
     return render_template('history.html', orders=user_order_list, user=user)
-
-
+@app.route("/printinvoice", methods=['POST'])
+def printinvoice():
+    user = session.get('user', None)
+    cart = request.form['cart']
+    time = request.form['time']
+    address = request.form['location']
+    if user:
+        invoice_filename=f"{user}_receipt.txt"
+    else:
+        invoice_filename=f"user_receip.txt"
+    try:
+        with open (invoice_filename, 'w') as f:
+            f.write(f"logged in user:{user}\n")
+            f.write(f"time ordered:{time}\n")
+            f.write(f"address:{address}\n")
+            f.write(f"cart:{cart}\n")
+    except OSError as e:
+        print("something went wrong")
+        return redirect(url_for('index'))
+    return redirect(url_for('index'))
 if __name__ == '__main__':
     #starts the program
     create_db()
