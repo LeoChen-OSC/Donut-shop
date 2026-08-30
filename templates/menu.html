@@ -22,7 +22,7 @@
 
 
         <div class="menu">
-                {% for donut_temp,details in donut_temp.items() %}
+            {% for donut_temp,details in donut_temp.items() %}
                 <div class="menu-items">
                     <h2>{{ donut_temp }}</h2>
                     <h2>${{ "%.2f"|format(details.price) }}</h2>

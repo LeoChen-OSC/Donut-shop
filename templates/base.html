@@ -9,25 +9,32 @@
     </head>
     <body>
         <div class="header">
-            <a href="/"><h1>donut stoppers</h1></a>
-            {% if session.user %}
-                <h2>Logged in as: {{ session.user }}</h2>
-                <a href="/logout">Logout</a>
-            {% else %}
-                <a href="/user">Login</a>
-            {% endif %}
-            {% if cartline %}
-                <a href="/checkout"><h1>Cart({{cartline}})</h1></a>
-            {%else%}
-                <a href="/checkout"><h1>Cart</h1></a>
-            {%endif%}
-            <a href="/history"><h1>Order History</h1></a>
-            <h1>Welcome to donut stoppers</h1>
-            <div class="linknav">
-                <a href="/menu">Menu</a>
-                <a href="/about">About</a>
-                <a href="/contact">Contact</a>
+
+            <div class="loginterface">
+                {% if session.user %}
+                    <h2>Logged in as: <br> {{ session.user }}</h2>
+                    <a href="/logout">Logout</a>
+                {% else %}
+                    <a href="/user">Login</a>
+                {% endif %}
             </div>
+            <a href="/"><h1>donut stoppers</h1></a>
+
+            <div class="cartdisplay">
+                {% if cartline %}
+                    <a href="/checkout"><h1>Cart({{cartline}})</h1></a>
+                {%else%}
+                    <a href="/checkout"><h1>Cart</h1></a>
+                {%endif%}
+                <a href="/history"><h1>Order History</h1></a>
+            </div>
+
+        </div>
+        <h1>Welcome to donut stoppers</h1>
+        <div class="linknav">
+            <a href="/menu">Menu</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
         </div>
         {% block content %}{% endblock %}
         <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>

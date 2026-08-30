@@ -26,7 +26,16 @@
     <p>Name: {{ order_name }}</p>
     <p>Logged in as {{ user }}</p>
     <p>total price: ${{ total_price }}</p>
-    <form action="/printinvoice">
+    <form action="/printinvoice" method="POST">
+        <input type="hidden" id="name123" name="name123" value="{{ order_name }}">
+        <input type="hidden" id="account" name="account" value="{{ user }}">
+        <input type="hidden" id="cart" name="cart" value="{{ cart }}">
+        {% if address %}
+            <input type="hidden" id="location" name="location" value="{{ address }}">
+        {% else %}
+            <input type="hidden" id="location" name="location" value="No address is provided">
+        {% endif %}
+        <input type="hidden" id="time" name="time" value="{{ timestamp }}">
         <input type="submit">Print invoice</input>
     </form>
 </div>  
