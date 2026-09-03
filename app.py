@@ -96,8 +96,9 @@ def register():
 
         flash('Registration successful! Please log in.')
         return redirect(url_for('index'))
-
-
+   
+    
+    
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     #attempts to log in the user
@@ -135,31 +136,86 @@ def user():
     return render_template('login.html', session = session, cart = cart, cartline = cartline)
 
 
+@app.route('/manage')
+def manage():
+    #''' Account management page
+    cartline = 0
+    session['user'] = session.get('user', None) 
+    cart = session.get('cart', None)
+    try:
+        for item in cart:
+            cartline = cartline + cart[item]['quantity']
+    except Exception as e:
+        pass
+    print(cartline)
+    return render_template('management.html', session = session, cart = cart, cartline = cartline)
+
+
+@app.route('/delaccount', methods=['POST'])
+#'''account deletion command, removes data from the database
+def delaccount():
+    conn=sqlite3.connect('database.db')
+    acconn=sqlite3.connect('databaseuser.db')
+    acc=session.get('user', None)
+
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM users WHERE email = ?', (acc,))
+    conn.commit()
+    conn.close()
+    cursor1 = acconn.cursor()
+    cursor1.execute('DELETE FROM users WHERE email = ?', (acc,))
+    acconn.commit()
+    acconn.close()
+    session.pop('user', None)
+    flash('Account deleted.')
+    return redirect(url_for('index'))
+
+
+@app.route('/passwordreset')
+def passwordreset():
+    cartline = 0
+    session['user'] = session.get('user', None) 
+    cart = session.get('cart', None)
+    try:
+        for item in cart:
+            cartline = cartline + cart[item]['quantity']
+    except Exception as e:
+        pass
+    print(cartline)
+    return render_template('passmanagement.html', session = session, cart = cart, cartline = cartline)
+
+
+@app.route('/reset', methods=["POST"])
+def reset():
+    checkpass=request.form['pass']
+    password=request.form['confirmpass']
+    if checkpass == password:
+        conn=sqlite3.connect('databaseuser.db')
+        acc=session.get('user', None)
+
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET password = ? WHERE email = ?",(password,acc,))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+    else:
+        flash('password does not match')
+        return redirect(url_for('passwordreset'))
+
 @app.route('/menu')
 def menu():
     #main code for the menu page
     session['user'] = session.get('user', None)
     print(f"Current user in session: {session['user']}")
     donut_temp, toppings, sprinkles = load_data()
+    print(donut_temp)
     price_display = {donut: details['price']
                      for donut, details in donut_temp.items()}
+    img_path={donut: details['img_path']
+                     for donut, details in donut_temp.items()}
     return render_template('menu.html', donut_temp=donut_temp,
-                           toppings=toppings, sprinkles=sprinkles, price_display=price_display)
+                           toppings=toppings, sprinkles=sprinkles, price_display=price_display, img_path=img_path)
 
-
-@app.route('/remove_from_cart')
-def remove_from_cart():
-    #removes the selcted item from the cart
-    item_info = request.args.get('item_info')
-    cart = session.get('cart', {})
-    if item_info in cart:
-        del cart[item_info]
-        session['cart'] = cart
-        session.modified = True
-        flash(f'Item {item_info} removed from cart.')
-    else:
-        flash(f'Item {item_info} not found in cart.')       
-    return redirect(url_for('add_to_cart'))
 
 
 @app.route('/checkout', methods=['POST', 'GET'])
@@ -227,7 +283,22 @@ def add_to_cart():
         for item in cart:
             total_price = total_price + cart[item]['total_price']
         return render_template('checkout.html', cart=cart,total_price=total_price)
-   
+
+
+@app.route('/remove_from_cart')
+def remove_from_cart():
+    #removes the selcted item from the cart
+    item_info = request.args.get('item_info')
+    cart = session.get('cart', {})
+    if item_info in cart:
+        del cart[item_info]
+        session['cart'] = cart
+        session.modified = True
+        flash(f'Item {item_info} removed from cart.')
+    else:
+        flash(f'Item {item_info} not found in cart.')       
+    return redirect(url_for('add_to_cart'))  
+
 
 @app.route('/payup', methods=['POST'])
 def payup():
@@ -385,6 +456,8 @@ def printinvoice():
         print("something went wrong")
         return redirect(url_for('index'))
     return redirect(url_for('index'))
+
+
 if __name__ == '__main__':
     #starts the program
     create_db()

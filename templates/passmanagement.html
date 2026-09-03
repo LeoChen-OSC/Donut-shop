@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Donut stoppers{% endblock %}
+{% block content %}
+
+<h1>Reset Password</h1>
+
+
+<form id="reset" action="/reset" method='POST'>
+    <label for="password">enter a new password:</label>
+    <input type="password" id="pass" name="pass" required>
+    <br><br>
+    <label for="confirmPassword">Confirm Password:</label>
+    <input type="password" id="confirmpass" name="confirmpass"required>
+    <br><br>
+    <button type="submit" value="reset password">Submit</button>
+</form>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+{% endblock  %}

@@ -1,48 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
-        <title>Verify Order</title>
-    </head>
-    <body>
-        <div class="header">
-            <a href="/"><h1>donut stoppers</h1></a>
-            <h1>Welcome to donut stoppers</h1>
-            <div class="linknav">
-                <a href="/menu">Menu</a>
-                <a href="/about">About</a>
-                <a href="/contact">Contact</a>
+{% extends "base.html" %}
+{% block title %}Donut stoppers{% endblock %}
+{% block content %}
 
+
+<div class="container">
+    <div class="conheader">
+        <h1>{{ main_order }}</h1>
+        <h2>Choose Toppings and Sprinkles</h2>
+        <h2>base cost: ${{ price }}</h2>
+    </div>
+    <div class="concontent">
+        <img src="{{ url_for('static', filename="images/" + image) }}" alt="{{ main_order }}" width="200">
+    </div>
+
+    <div class="conside">
+        <form action="/checkout" method="POST" >
+            <div class="orderForm">
+                <input type="hidden" name="main_price" value="{{ price }}">
+                <select name="topping" id="topping">
+                    {% for topping,details in toppings.items() %}
+                        <option value="{{ topping }}" >{{ topping }}-${{ details.price }}</option>
+                    {% endfor %}
+                </select>
+                
+                <select name="sprinkle" id="sprinkle">
+                    {% for sprinkle,details in sprinkles.items() %}
+                        <option value="{{ sprinkle }}" data-price="{{ details.price }}">{{ sprinkle }}-${{ details.price }}</option>
+                    {% endfor %}
+                </select>
+                <input name="quantity" id="quan" type="number" min="1" placeholder="Quantity" required>
+                <input type="hidden" name="main_order" id="main_order" value="{{ main_order }}">
+                <button type="submit">Confirm Order</button>
             </div>
-        </div>
-        <div class="container">
-            <h1>{{ main_order }}</h1>
-            <img src="{{ url_for('static', filename=image) }}" alt="{{ main_order }}" width="200">
-            <h2>Choose Toppings and Sprinkles</h2>
-            <h2>base cost: ${{ price }}</h2>
+        </form>
+    </div>
+</div>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
 
-            <form action="/checkout" method="POST" >
-
-                <div class="orderForm">
-                    <input type="hidden" name="main_price" value="{{ price }}">
-                    <select name="topping" id="topping">
-                        {% for topping,details in toppings.items() %}
-                            <option value="{{ topping }}" >{{ topping }}-${{ details.price }}</option>
-                        {% endfor %}
-                    </select>
-                    
-                    <select name="sprinkle" id="sprinkle">
-                        {% for sprinkle,details in sprinkles.items() %}
-                            <option value="{{ sprinkle }}" data-price="{{ details.price }}">{{ sprinkle }}-${{ details.price }}</option>
-                        {% endfor %}
-                    </select>
-                    <input name="quantity" id="quan" type="number" min="1" placeholder="Quantity" required>
-                    <input type="hidden" name="main_order" id="main_order" value="{{ main_order }}">
-                    <button type="submit">Confirm Order</button>
-                </div>
-            </form>
-        </div>
-    </body>
-</html>
+{% endblock  %}

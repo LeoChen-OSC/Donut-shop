@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Donut stoppers{% endblock %}
+{% block content %}
+
+<h1>Manage {{ session['user']}}'s Account</h1>
+<form action="delaccount" method="POST">
+    <input type="submit" placeholder="delete account">
+</form>
+<form action="passwordreset">
+    <input type="submit" value="reset password">
+</form>
+{% endblock  %}
