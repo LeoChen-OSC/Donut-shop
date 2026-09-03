@@ -14,11 +14,13 @@
                 {% if session.user %}
                     <h2>Logged in as: <br> {{ session.user }}</h2>
                     <a href="/logout">Logout</a>
+                    <a href="/manage">Manage account</a>
                 {% else %}
                     <a href="/user">Login</a>
                 {% endif %}
+
             </div>
-            <a href="/"><h1>donut stoppers</h1></a>
+            <a href="/" id="homeredir"><h1>donut stoppers</h1></a>
 
             <div class="cartdisplay">
                 {% if cartline %}

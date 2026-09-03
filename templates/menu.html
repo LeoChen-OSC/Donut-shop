@@ -1,49 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Menu</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    <body>
-        <div class="header">
-            <a href="/"><h1>donut stoppers</h1></a>
-            <h1>Welcome to donut stoppers</h1>
-            <div class="linknav">
-                <a href="/menu">Menu</a>
-                <a href="/about">About</a>
-                <a href="/contact">Contact</a>
+{% extends "base.html" %}
+{% block title %}Donut stoppers{% endblock %}
+{% block content %}
 
-            </div>
-            <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
-        </div>
-        <h2>Menu</h2>
+<div class="menu">
+    {% for donut_temp,details in donut_temp.items() %}
+        <div class="menu-items">
+            <h2>{{ donut_temp }}</h2>
+            <h2>${{ "%.2f"|format(details.price) }}</h2>
+            <form action="/verify" method="post">
+                <input type="hidden" name="main_order" value="{{ donut_temp }}" id="main_order">
+                <input type="hidden" id="image" name="image" value="{{ details.img_path}}">
+                <input type="hidden" name="price" value="{{ details.price }}" id="price">
+                <img src="static/images/{{ details.img_path}}" alt="{{ details.img_path}}" width="200">
 
-
-        <div class="menu">
-            {% for donut_temp,details in donut_temp.items() %}
-                <div class="menu-items">
-                    <h2>{{ donut_temp }}</h2>
-                    <h2>${{ "%.2f"|format(details.price) }}</h2>
-                    <form action="/verify" method="post">
-                        <input type="hidden" name="main_order" value="{{ donut_temp }}" id="main_order">
-                        <input type="hidden" id="image" name="image" value="images/plain_donut.png">
-                        <input type="hidden" name="price" value="{{ details.price }}" id="price">
-                        <img src="{{ url_for('static', filename='images/plain_donut.png') }}" alt="Plain Donut" width="200">
-                        <button type="submit">Add to Order</button>
-                    </form>
-                </div>  
+                <button type="submit">Add to Order</button>
+            </form>
+        </div>  
+    {% endfor %}
+</div>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
             {% endfor %}
-        </div>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-    </body>
-</html>
+        </ul>
+    {% endif %}
+{% endwith %}
+
+{% endblock  %}
