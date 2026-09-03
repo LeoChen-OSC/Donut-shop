@@ -17,6 +17,37 @@ def load_data():
     return donut_temp, toppings, sprinkles
 
 
+#creates database
+def create_db():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS users 
+              (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+              email TEXT NOT NULL,
+              orders TEXT,
+              name TEXT,
+              address TEXT,
+              method TEXT,  
+              date TEXT,
+              total_price TEXT
+              
+              )''')
+    conn.commit()
+    conn.close()
+    
+def generate_user_list():
+    conn = sqlite3.connect('databaseuser.db')
+    c = conn.cursor()
+    c.execute('''
+              CREATE TABLE IF NOT EXISTS users
+              (id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+              email TEXT,
+              password TEXT)''')
+    conn.commit()
+    conn.close()
+
+
 @app.route('/')
 def index():
     #the main function of the mai page, sets this as the
@@ -45,36 +76,6 @@ def about():
     print(cartline)
     return render_template('about.html', session = session, cart = cart, cartline = cartline)
 
-
-def create_db():
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users 
-              (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-              email TEXT NOT NULL,
-              orders TEXT,
-              name TEXT,
-              address TEXT,
-              method TEXT,  
-              date TEXT,
-              total_price TEXT
-              
-              )''')
-    conn.commit()
-    conn.close()
-    
-    
-def generate_user_list():
-    conn = sqlite3.connect('databaseuser.db')
-    c = conn.cursor()
-    c.execute('''
-              CREATE TABLE IF NOT EXISTS users
-              (id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-              email TEXT,
-              password TEXT)''')
-    conn.commit()
-    conn.close()
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -386,7 +387,6 @@ def submit_order():
         conn.commit()
         conn.close()
         cartline = 0
-
         cart = session.get('cart', None)
         try:
             for item in cart:
