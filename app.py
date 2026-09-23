@@ -3,10 +3,13 @@ import select, datetime
 from flask import Flask, app, jsonify, request
 from flask import flash, redirect, session, url_for, render_template
 import sqlite3,json
+
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 
+#loads jsons data
 def load_data():
     with open('shopping-data/type.json') as f:
         donut_temp = json.load(f)
@@ -34,7 +37,8 @@ def create_db():
               )''')
     conn.commit()
     conn.close()
-    
+  
+#generates user db  
 def generate_user_list():
     conn = sqlite3.connect('databaseuser.db')
     c = conn.cursor()
@@ -63,6 +67,8 @@ def index():
     print(cartline)
     return render_template('index.html', session = session, cart = cart, cartline = cartline)
 
+
+#about page
 @app.route('/about')
 def about():
     cartline = 0
@@ -77,7 +83,7 @@ def about():
     return render_template('about.html', session = session, cart = cart, cartline = cartline)
 
 
-
+#if user registers
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -99,7 +105,7 @@ def register():
         return redirect(url_for('index'))
    
     
-    
+#user login 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     #attempts to log in the user
@@ -123,6 +129,7 @@ def login():
             return redirect(url_for('index'))
 
 
+#login page
 @app.route('/user')
 def user():
     cartline = 0
@@ -135,6 +142,7 @@ def user():
         pass
     print(cartline)
     return render_template('login.html', session = session, cart = cart, cartline = cartline)
+
 
 
 @app.route('/manage')
@@ -150,6 +158,7 @@ def manage():
         pass
     print(cartline)
     return render_template('management.html', session = session, cart = cart, cartline = cartline)
+
 
 
 @app.route('/delaccount', methods=['POST'])
@@ -172,6 +181,7 @@ def delaccount():
     return redirect(url_for('index'))
 
 
+#reset password page
 @app.route('/passwordreset')
 def passwordreset():
     cartline = 0
@@ -186,6 +196,7 @@ def passwordreset():
     return render_template('passmanagement.html', session = session, cart = cart, cartline = cartline)
 
 
+#password reset function
 @app.route('/reset', methods=["POST"])
 def reset():
     checkpass=request.form['pass']
@@ -203,6 +214,7 @@ def reset():
         flash('password does not match')
         return redirect(url_for('passwordreset'))
 
+
 @app.route('/menu')
 def menu():
     #main code for the menu page
@@ -218,7 +230,7 @@ def menu():
                            toppings=toppings, sprinkles=sprinkles, price_display=price_display, img_path=img_path)
 
 
-
+#cart page
 @app.route('/checkout', methods=['POST', 'GET'])
 def add_to_cart():
     # detects if values are entered into the cart data
@@ -286,6 +298,7 @@ def add_to_cart():
         return render_template('checkout.html', cart=cart,total_price=total_price)
 
 
+#item remove function
 @app.route('/remove_from_cart')
 def remove_from_cart():
     #removes the selcted item from the cart
@@ -301,6 +314,7 @@ def remove_from_cart():
     return redirect(url_for('add_to_cart'))  
 
 
+#payment confirm page
 @app.route('/payup', methods=['POST'])
 def payup():
     user = session.get('user', None)
@@ -309,6 +323,7 @@ def payup():
     return render_template('payment.html', cart=cart, total_price=total_price, user=user)
 
 
+#logout command
 @app.route('/logout')
 def logout():
     #logs out the user
@@ -317,6 +332,7 @@ def logout():
     return redirect(url_for('index'))
 
 
+#clear cart command
 @app.route('/cartclear', methods=['POST'])
 def cartclear():
     #removes all the session cart data, clearing it.
@@ -325,6 +341,7 @@ def cartclear():
     return redirect(url_for('add_to_cart'))
 
 
+#remove order from history
 @app.route('/delete_order/<int:order_id>', methods=['POST'])
 def delete_order(order_id):
     with sqlite3.connect('database.db') as conn:
@@ -335,6 +352,7 @@ def delete_order(order_id):
     return redirect(url_for('history'))
 
 
+#order donut page
 @app.route('/verify', methods=['POST'])
 def verify():
     #loads all the menu items in jsons
@@ -352,6 +370,7 @@ def verify():
                            toppings=topping_data, sprinkles=sprinkle_data, image=image)
 
 
+#order submission page
 @app.route('/submit_order', methods=['POST'])
 def submit_order():
     user = session.get('user', None)
@@ -410,6 +429,7 @@ def submit_order():
                                total_price = total_price, address = address, order_name = user_order_name, cartline = cartline)
 
 
+#order history page
 @app.route('/history')
 def history():
     user = session.get('user', None)
@@ -436,6 +456,9 @@ def history():
             })
     print(f"Order history for user {user}: {user_order_list}")
     return render_template('history.html', orders=user_order_list, user=user)
+
+
+#txt reciept write
 @app.route("/printinvoice", methods=['POST'])
 def printinvoice():
     user = session.get('user', None)
@@ -458,6 +481,7 @@ def printinvoice():
     return redirect(url_for('index'))
 
 
+#main function
 if __name__ == '__main__':
     #starts the program
     create_db()
