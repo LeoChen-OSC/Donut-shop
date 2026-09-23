@@ -1,52 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>donut stoppers</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    <body>
-        <div class="header">
-            <a href="/"><h1>donut stoppers</h1></a>
-            <h1>Welcome to donut stoppers</h1>
-            <div class="linknav">
-                <a href="/menu">Menu</a>
-                <a href="/about">About</a>
-                <a href="/contact">Contact</a>
-            </div>
-        </div>
-        <h2>Checkout</h2>
-        <div class="total">
-            <h3>Total Price: ${{ total_price }}</h3>
-        </div>
-        <div class="in_items">
-            {% if cart %}
-                <ul>
-                {% for items, details in cart.items() %}
-                    <li>{{ items }} - Quantity: {{ details.quantity }} - Price: ${{ details.total_price }}
-                        <a href="{{ url_for('remove_from_cart', item_info=items) }}">Remove</a>
-                    </li>
-                {% endfor %}
-                </ul>
-            {% else %}
-                <p>Your cart is empty.</p>
-            {% endif %}
-        </div>
-        <form action="/payup" method="POST">
-            <button type="submit">Proceed to Payment</button>
-        </form>
-        <form action="/cartclear" method="POST">
-            <button type="submit">Clear Cart</button>
-        </form>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-    </body>
-</html>
+
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+
+
+
+<h2>Checkout</h2>
+<div class="total">
+    <h3>Total Price: ${{ total_price }}</h3>
+</div>
+<div class="in_items">
+    {% if cart %}
+        <ul>
+        {% for items, details in cart.items() %}
+            <li>{{ items }} - Quantity: {{ details.quantity }} - Price: ${{ details.total_price }}
+                <a href="{{ url_for('remove_from_cart', item_info=items) }}">Remove</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+</div>
+<form action="/payup" method="POST">
+    <button type="submit">Proceed to Payment</button>
+</form>
+<form action="/cartclear" method="POST">
+    <button type="submit">Clear Cart</button>
+</form>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+
+{% endblock %}

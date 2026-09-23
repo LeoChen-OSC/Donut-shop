@@ -1,78 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>donut stoppers</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    <body>
-        <div class="header">
-            <a href="/"><h1>donut stoppers</h1></a>
-            {% if session.user %}
-                <h2>Logged in as: {{ session.user }}</h2>
-                <a href="/logout">Logout</a>
-            {% else %}
-                <a href="/user">Login</a>
-            {% endif %}
-            <h1>Welcome to donut stoppers</h1>
-            <div class="linknav">
-                <a href="/menu">Menu</a>
-                <a href="/about">About</a>
-                <a href="/contact">Contact</a>
-            </div>
-        </div>
-        {% if user %}
-            <h1> {{user}}'s order history </h1>
-        {% else %}
-            <h1>Logged out</h1>
-            <button><a href="/user">Log in</a></button>
-        {% endif %}
-        <table>
-            <tr>
-                <th>Order ID</th>
-                <th>Items</th>
-                <th>Name</th>
-                <th>Address</th>
-                <th>Method</th>
-                <th>Total Price</th>
-                <th>Date</th>
-            </tr>
-            {% for order in orders %}
-                <tr class="order-row">
-                    <td>{{ order.order_id }}</td>
-                    <td>
-                            <ul>
-                                {% for item,details in order['item_orders'].items() %}
-                                    <li>{{ item }} - Quantity: {{ details['quantity'] }} </li>
-                                {% endfor %}
-                            </ul>
-                    </td>
-                    <td>{{ order.name }}</td>
-                    <td>{{ order.address }}</td>
-                    <td>{{ order.method }}</td>
-                    <td>${{ order.total }}</td>
-                    <td>{{ order.date }}</td>
-                    <td>
-                        <form action="{{ url_for('delete_order', order_id=order.order_id) }}" method="post">
-                            <input type="hidden" name="order_id" value="{{ order.order_id }}">
-                            <input type="submit" value="Delete Order">
-                        </form>
-                    </td>
-                </tr>
+
+{% extends "base.html" %}
+{% block title %}Order History{% endblock %}
+{% block content %}
+
+
+
+<table>
+    <tr>
+        <th>Order ID</th>
+        <th>Items</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Method</th>
+        <th>Total Price</th>
+        <th>Date</th>
+    </tr>
+
+    
+    {% for order in orders %}
+        <tr class="order-row">
+            <td>{{ order.order_id }}</td>
+            <td>
+                    <ul>
+                        {% for item,details in order['item_orders'].items() %}
+                            <li>{{ item }} - Quantity: {{ details['quantity'] }} </li>
+                        {% endfor %}
+                    </ul>
+            </td>
+            <td>{{ order.name }}</td>
+            <td>{{ order.address }}</td>
+            <td>{{ order.method }}</td>
+            <td>${{ order.total }}</td>
+            <td>{{ order.date }}</td>
+            <td>
+                <form action="{{ url_for('delete_order', order_id=order.order_id) }}" method="post">
+                    <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                    <input type="submit" value="Delete Order">
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+{% if not orders %}
+    <p>No order history available.</p>
+{% endif %}
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
             {% endfor %}
-        </table>
-        {% if not orders %}
-            <p>No order history available.</p>
-        {% endif %}
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-    </body>
-</html>
+        </ul>
+    {% endif %}
+{% endwith %}
+
+
+{% endblock %}
