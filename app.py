@@ -82,7 +82,19 @@ def about():
     print(cartline)
     return render_template('about.html', session = session, cart = cart, cartline = cartline)
 
-
+#contact page
+@app.route('/contact')
+def contact():
+    cartline = 0
+    session['user'] = session.get('user', None) 
+    cart = session.get('cart', None)
+    try:
+        for item in cart:
+            cartline = cartline + cart[item]['quantity']
+    except Exception as e:
+        pass
+    print(cartline)
+    return render_template('contact.html', session = session, cart = cart, cartline = cartline)
 #if user registers
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -218,6 +230,17 @@ def reset():
 @app.route('/menu')
 def menu():
     #main code for the menu page
+    
+    cartline = 0
+    session['user'] = session.get('user', None) 
+    cart = session.get('cart', None)
+    try:
+        for item in cart:
+            cartline = cartline + cart[item]['quantity']
+    except Exception as e:
+        pass
+    
+    print(cartline)   
     session['user'] = session.get('user', None)
     print(f"Current user in session: {session['user']}")
     donut_temp, toppings, sprinkles = load_data()
@@ -227,12 +250,23 @@ def menu():
     img_path={donut: details['img_path']
                      for donut, details in donut_temp.items()}
     return render_template('menu.html', donut_temp=donut_temp,
-                           toppings=toppings, sprinkles=sprinkles, price_display=price_display, img_path=img_path)
+                           toppings=toppings, sprinkles=sprinkles, price_display=price_display, img_path=img_path, cartline=cartline)
 
 
 #cart page
 @app.route('/checkout', methods=['POST', 'GET'])
 def add_to_cart():
+    
+    
+    cartline = 0
+    session['user'] = session.get('user', None) 
+    cart = session.get('cart', None)
+    try:
+        for item in cart:
+            cartline = cartline + cart[item]['quantity']
+    except Exception as e:
+        pass
+    print(cartline)
     # detects if values are entered into the cart data
     try:
         # requests the data from the form and stores it as variables
@@ -286,7 +320,8 @@ def add_to_cart():
         # exports the cart data into the session, saving it for later use.
         session['cart']=cart
         session.modified = True
-        return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=selected_sprinkles, cart=cart, total_price=total_price, quantity=quantity)
+        return render_template('checkout.html', main_order=main_order, toppings=toppings, sprinkles=selected_sprinkles, 
+                               cart=cart, total_price=total_price, quantity=quantity, cartline=cartline)
     # for a user deleting a item from the cart, or a redirect to the cart page.
     except Exception as e:
         cart = session.get('cart', {})
@@ -295,7 +330,7 @@ def add_to_cart():
         session.modified = True
         for item in cart:
             total_price = total_price + cart[item]['total_price']
-        return render_template('checkout.html', cart=cart,total_price=total_price)
+        return render_template('checkout.html', cart=cart,total_price=total_price,cartline=cartline)
 
 
 #item remove function
