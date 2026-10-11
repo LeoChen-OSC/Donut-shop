@@ -3,50 +3,50 @@
 {% block title %}Review order{% endblock %}
 {% block content %}
 
-
-<h2>Review your order</h2>
-<div class="total">
-    <h3>Total Price: ${{ total_price }}</h3>
-</div>
-<div class="in_items">
-    {% if cart %}
-        <ul>
-        {% for items, details in cart.items() %}
-            <li>{{ items }} - Quantity: {{ details.quantity }} - Price: ${{ details.total_price }}
-            </li>
-        {% endfor %}
-        </ul>
+<div class="review">
+    <h2>Review your order</h2>
+    <div class="total">
+        <h3>Total Price: ${{ total_price }}</h3>
+    </div>
+    <div class="in_items">
+        {% if cart %}
+            <ul>
+            {% for items, details in cart.items() %}
+                <li>{{ items }} - Quantity: {{ details.quantity }} - Price: ${{ details.total_price }}
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>Your cart is empty.</p>
+        {% endif %}
+    </div>
+    {% if user %}
+        <p>Logged in as: {{ user }}</p>
     {% else %}
-        <p>Your cart is empty.</p>
+        <p>You are not logged in.</p>
+    {% endif %}
+    {% if cart %}
+        <form action="/submit_order" method="POST" class="orderForm10">
+            <input type="hidden" name="cart" value="{{ cart }}">
+            <input type="hidden" name="user" value="{{ user }}">
+            <input type="hidden" name="total_price" value="{{ total_price }}">
+            <h2>Choose Delivery Method</h2>
+            <select name="delivery_method" id="delivery_method" onchange="updatePaymentForm()" required>
+                <option value="pickup">Pickup</option>
+                <option value="delivery">Delivery</option>
+            </select>
+
+            <input type="text" name="address" placeholder="Enter your address(optional)">
+
+            <input type="text" name="name" placeholder="Enter your name" required>
+            <label for="terms">I agree to the terms and conditions (which is nothing)</label>
+            <input type="checkbox" name="terms" required></input>
+
+            <button type="submit">Submit Order</button>
+            
+        </form>
+    {% else %}
+        <h1>Please order something</h1>
     {% endif %}
 </div>
-{% if user %}
-    <p>Logged in as: {{ user }}</p>
-{% else %}
-    <p>You are not logged in.</p>
-{% endif %}
-{% if cart %}
-    <form action="/submit_order" method="POST" class="orderForm10">
-        <input type="hidden" name="cart" value="{{ cart }}">
-        <input type="hidden" name="user" value="{{ user }}">
-        <input type="hidden" name="total_price" value="{{ total_price }}">
-        <h2>Choose Delivery Method</h2>
-        <select name="delivery_method" id="delivery_method" onchange="updatePaymentForm()" required>
-            <option value="pickup">Pickup</option>
-            <option value="delivery">Delivery</option>
-        </select>
-
-        <input type="text" name="address" placeholder="Enter your address(optional)">
-
-        <input type="text" name="name" placeholder="Enter your name" required>
-        <label for="terms">I agree to the terms and conditions (which is nothing)</label>
-        <input type="checkbox" name="terms" required></input>
-
-        <button type="submit">Submit Order</button>
-        
-    </form>
-{% else %}
-    <h1>Please order something</h1>
-{% endif %}
-
 {% endblock %}

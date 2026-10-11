@@ -134,14 +134,53 @@ h1 {
     background-color: #f9f9f9;
     text-align: center;
 
+}
 
-
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #4101f2;
+    padding: 20px;
+    margin: 0 10%;
+    border : 3px solid black;
+    border-radius: 10px;
+    gap: 10px;
+}
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.login-container input[type="password"] ,.login-container input[type="email"] {
+    padding: 10px;
+    margin: 10px 0;
+    width: 300px;
+    background-color: #ffffff;
+    border: 1px solid #000000;
+    border-radius: 15px;
+}
+.login-container button {
+    padding: 10px 20px;
+    background-color: #1df4ff;
+    color: #000000;
+    border: none;
+    
+    border-radius: 5px;
+    cursor: pointer;
 }
 .orderForm10{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    background-color: #4101f2;
+    padding: 20px;
+    border : 3px solid black;
+    border-radius: 10px;
+    gap: 10px;
 }
 .swiper{
     width: 100%;
@@ -194,5 +233,17 @@ h1 {
     color:#000000;
     padding: 10px;
     text-decoration: none;
+
+}
+
+.review{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    background-color: #7c69b0;
+    padding: 20px;
+    margin: 20px;
+    gap: 20px;
 
 }
