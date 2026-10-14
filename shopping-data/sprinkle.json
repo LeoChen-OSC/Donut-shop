@@ -1,19 +1,18 @@
 {
-    "plain sprinkle":{
-        "price": 0.25,
-        "calories": 20
+    "Plain sprinkle":{
+        "price": 0.25
     },
-    "chocolate chips":{
-        "price": 0.50,
-        "calories": 40
+    "Chocolate chips":{
+        "price": 0.50
     },
-    "sweet peanuts":{
-        "price": 0.75,
-        "calories": 60
+    "Sweet peanuts":{
+        "price": 0.75
     },
-    "chocolate drizzle":{
-        "price": 0.60,
-        "calories": 50
+    "Chocolate drizzle":{
+        "price": 0.60
+    },
+    "None":{
+        "price": 0.0
     }
 
 }
