@@ -153,6 +153,10 @@ h2, p, h3, h4, h5, h6 ,button, a, input, select{
     justify-content: flex-start;
     margin: 20px;
     border: 1px solid #050505;
+    background-image: url("https://img.magnific.com/free-vector/abstract-background-with-cute-pattern-design_1048-15484.jpg?semt=ais_hybrid&w=740&q=80");
+    background-size: cover;
+    padding: 20px;
+    border-radius: 10px;
 }
 .menu-items form {
     display: flex;
@@ -163,6 +167,9 @@ h2, p, h3, h4, h5, h6 ,button, a, input, select{
     margin: 10px 0;
     width: 200px;
     height: 200px;
+    background-color: #ffffff;
+    border : 5px solid black;
+    border-radius: 10px;
     object-fit: cover;
 }
 .order-row {
