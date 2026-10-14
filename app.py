@@ -189,6 +189,7 @@ def delaccount():
     acconn.commit()
     acconn.close()
     session.pop('user', None)
+    session.pop('cart', None)
     flash('Account deleted.')
     return redirect(url_for('index'))
 
@@ -371,6 +372,7 @@ def payup():
 def logout():
     #logs out the user
     session.pop('user', None)
+    session.pop('cart', None)
     flash('You have been logged out.')
     return redirect(url_for('index'))
 
