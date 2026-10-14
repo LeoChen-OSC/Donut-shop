@@ -1,21 +1,21 @@
 {
-    "plain donut":{
+    "Plain donut":{
         "price": 1.50,
         "img_path": "plain_donut.png"
     },
-    "glazed donut":{
+    "Glazed donut":{
         "price": 1.75,
         "img_path": "glaze_donut.jpg"
     },
-    "baked donut":{
+    "Baked donut":{
         "price": 2.00,
         "img_path": "baked-donut.jpg"
     },
-    "cream-filled donut":{
+    "Cream-filled donut":{
         "price": 2.50,
         "img_path": "creme-filled-donut.jpg"
     },
-    "jam filled donut":{
+    "Jam filled donut":{
         "price": 2.25,
         "img_path": "baked-donut.jpg"
     }
