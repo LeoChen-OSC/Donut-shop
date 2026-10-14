@@ -13,10 +13,10 @@
             <div class="loginterface">
                 {% if session.user %}
                     <h2>Logged in as: <br> {{ session.user }}</h2>
-                    <a href="/logout">Logout</a>
-                    <a href="/manage">Manage account</a>
+                    <a href="/logout"><h4>Logout</h4></a>
+                    <a href="/manage"><h4>Manage account</h4></a>
                 {% else %}
-                    <a href="/user">Login</a>
+                    <a href="/user"><h4>Login</h4></a>
                 {% endif %}
 
             </div>
@@ -24,11 +24,11 @@
 
             <div class="cartdisplay">
                 {% if cartline %}
-                    <a href="/checkout"><h2>Cart({{cartline}})</h2></a>
+                    <a href="/checkout"><h4>Cart({{cartline}})</h4></a>
                 {%else%}
-                    <a href="/checkout"><h2>Cart</h2></a>
+                    <a href="/checkout"><h4>Cart</h4></a>
                 {%endif%}
-                <a href="/history"><h2>Order History</h2></a>
+                <a href="/history"><h4>Order History</h4></a>
             </div>
 
         </div>
