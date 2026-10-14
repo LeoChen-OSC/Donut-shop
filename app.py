@@ -1,7 +1,7 @@
 from email.mime import image
 import select, datetime
 from flask import Flask, app, jsonify, request
-from flask import flash, redirect, session, url_for, render_template
+from flask import flash, redirect, session, url_for, render_template,send_file
 import sqlite3,json
 
 
@@ -352,10 +352,18 @@ def remove_from_cart():
 #payment confirm page
 @app.route('/payup', methods=['POST'])
 def payup():
+    cartline = 0
+    session['user'] = session.get('user', None) 
+    cart = session.get('cart', None)
+    try:
+        for item in cart:
+            cartline = cartline + cart[item]['quantity']
+    except Exception as e:
+        pass
     user = session.get('user', None)
     cart = session.get('cart', {})
     total_price = sum(item['total_price'] for item in cart.values())
-    return render_template('payment.html', cart=cart, total_price=total_price, user=user)
+    return render_template('payment.html', cart=cart, total_price=total_price, user=user,cartline=cartline)
 
 
 #logout command
@@ -390,6 +398,14 @@ def delete_order(order_id):
 #order donut page
 @app.route('/verify', methods=['POST'])
 def verify():
+    cartline = 0
+    session['user'] = session.get('user', None) 
+    cart = session.get('cart', None)
+    try:
+        for item in cart:
+            cartline = cartline + cart[item]['quantity']
+    except Exception as e:
+        pass
     #loads all the menu items in jsons
     with open('shopping-data/type.json') as f:
         menu_data = json.load(f)
@@ -402,7 +418,7 @@ def verify():
     image = request.form['image']
     price = request.form['price']
     return render_template('verify-order.html',price=price, main_order=main_order, 
-                           toppings=topping_data, sprinkles=sprinkle_data, image=image)
+                           toppings=topping_data, sprinkles=sprinkle_data, image=image, cartline=cartline)
 
 
 #order submission page
@@ -467,6 +483,14 @@ def submit_order():
 #order history page
 @app.route('/history')
 def history():
+    cartline = 0
+    session['user'] = session.get('user', None) 
+    cart = session.get('cart', None)
+    try:
+        for item in cart:
+            cartline = cartline + cart[item]['quantity']
+    except Exception as e:
+        pass
     user = session.get('user', None)
     print(user)
     conn = sqlite3.connect('database.db')
@@ -490,7 +514,7 @@ def history():
 
             })
     print(f"Order history for user {user}: {user_order_list}")
-    return render_template('history.html', orders=user_order_list, user=user)
+    return render_template('history.html', orders=user_order_list, user=user, cartline=cartline)
 
 
 #txt reciept write
@@ -503,13 +527,16 @@ def printinvoice():
     if user:
         invoice_filename=f"{user}_receipt.txt"
     else:
-        invoice_filename=f"user_receip.txt"
+        invoice_filename=f"user_receipt.txt"
     try:
         with open (invoice_filename, 'w') as f:
             f.write(f"logged in user:{user}\n")
             f.write(f"time ordered:{time}\n")
             f.write(f"address:{address}\n")
             f.write(f"cart:{cart}\n")
+        # sends file for user to download
+        file_path = invoice_filename
+        return send_file(file_path, as_attachment=True)
     except OSError as e:
         print("something went wrong")
         return redirect(url_for('index'))
