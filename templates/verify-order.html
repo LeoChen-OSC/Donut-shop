@@ -28,7 +28,7 @@
                         <option value="{{ sprinkle }}" data-price="{{ details.price }}">{{ sprinkle }}-${{ details.price }}</option>
                     {% endfor %}
                 </select>
-                <input name="quantity" id="quan" type="number" min="1" placeholder="Quantity" required>
+                <input name="quantity" id="quan" type="number" min="1" max="100" placeholder="Quantity" required>
                 <input type="hidden" name="main_order" id="main_order" value="{{ main_order }}">
                 <button type="submit">Confirm Order</button>
             </div>
