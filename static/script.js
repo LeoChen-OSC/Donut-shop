@@ -15,7 +15,6 @@ new Swiper("#swiper-1", {
 });
 
 
-
 function updatePaymentForm() {
     //sets const variables for the delivery method and address input field.
     const deliveryMethod = document.getElementById('delivery_method').value;
@@ -30,6 +29,3 @@ function updatePaymentForm() {
     }
 }
 
-
-const pass=document.getElementById("pass");
-const confirmpass=document.getElementById("confirmpass");
