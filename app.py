@@ -1,3 +1,4 @@
+#item import
 from email.mime import image
 import select, datetime
 from flask import Flask, app, jsonify, request
@@ -51,7 +52,7 @@ def generate_user_list():
     conn.commit()
     conn.close()
 
-
+#home page
 @app.route('/')
 def index():
     #the main function of the mai page, sets this as the
@@ -95,6 +96,8 @@ def contact():
         pass
     print(cartline)
     return render_template('contact.html', session = session, cart = cart, cartline = cartline)
+
+
 #if user registers
 @app.route('/register', methods=['GET', 'POST'])
 def register():
